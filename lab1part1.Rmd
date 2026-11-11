@@ -10,8 +10,8 @@ library(gradethis)
 library(learnrhash)
 knitr::opts_chunk$set(echo = FALSE)
 
-# Ensure gradethis check mode is configured
-gradethis::gradethis_setup()
+# Ensure gradethis check mode is configured (causing hang-up?)
+# gradethis::gradethis_setup()
 ```
 
 <style>
