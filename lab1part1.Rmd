@@ -1,0 +1,555 @@
+---
+title: "Lab 1: R Fundamentals, Data Structures, and Vectors"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(learnrhash)
+knitr::opts_chunk$set(echo = FALSE)
+
+# Ensure gradethis check mode is configured
+gradethis::gradethis_setup()
+```
+
+<style>
+#learnrhash-url, a[href="http://google.com"] {
+  display: none !important;
+}
+</style>
+
+## Section 1: Arithmetic & Function Composition
+
+### Exercise 1.1: Sum of Squares Formula
+
+The closed-form sum of the squares of the first $n$ positive integers ($1^2 + 2^2 + 3^2 + \dots + n^2$) is given by the formula:
+
+$$\frac{n(n + 1)(2n + 1)}{6}$$
+
+Assign the value `50` to the variable `n`. On the following lines, calculate the sum of the squares of the first 50 positive integers using the formula, and store the result in `sum_sq_50`. Make `sum_sq_50` the final line of your code.
+
+```{r sum_sq_50, exercise=TRUE}
+n <- 50
+
+```
+
+``` {r sum_sq_50-hint-1}
+Remember that in R, multiplication must be written explicitly with * (e.g., n * (n + 1)).
+```
+
+``` {r sum_sq_50-hint-2}
+The formula should be written as:
+sum_sq_50 <- n * (n + 1) * (2 * n + 1) / 6
+```
+
+```{r sum_sq_50-solution}
+n <- 50
+sum_sq_50 <- n * (n + 1) * (2 * n + 1) / 6
+sum_sq_50
+```
+
+```{r sum_sq_50-check}
+grade_result(
+  pass_if(~ identical(as.numeric(.result), 42925), "Correct! The sum of the first 50 squares is 42,925."),
+  fail_if(~ TRUE, "Double-check your formula and parentheses. Did you leave sum_sq_50 as the last line?")
+)
+```
+
+---
+
+### Exercise 1.2: Expanding to Larger Sequences
+
+Using the exact same formula, calculate the sum of the squares for the first `500` positive integers. Store the result in `sum_sq_500` and ensure it is evaluated on the final line.
+
+```{r sum_sq_500, exercise=TRUE}
+
+```
+
+```{r sum_sq_500-solution}
+n <- 500
+sum_sq_500 <- n * (n + 1) * (2 * n + 1) / 6
+sum_sq_500
+```
+
+```{r sum_sq_500-check}
+grade_result(
+  pass_if(~ identical(as.numeric(.result), 41791750), "Great job!"),
+  fail_if(~ TRUE, "Make sure n is set to 500 and sum_sq_500 is the final line.")
+)
+```
+
+---
+
+### Question 1.3: Concept Check on `seq()` and `prod()`
+
+```{r quiz_seq_prod}
+quiz(
+  question(
+    "Consider the following snippet:
+    
+    k <- 5
+    vals <- seq(1, k)
+    prod(vals)
+    
+    What does this code accomplish?",
+    answer("`prod` builds a sequence of length 5, and `seq` multiplies the elements."),
+    answer("`seq` builds the sequence 1, 2, 3, 4, 5, and `prod` multiplies them together (computing 5 factorial).", correct = TRUE),
+    answer("`seq` chooses 5 random numbers, and `prod` estimates their average."),
+    answer("`prod` converts the sequence into characters."),
+    allow_retry = TRUE
+  )
+)
+```
+
+---
+
+### Exercise 1.4: Nested Function Evaluation
+
+In R, nested function calls are evaluated from the innermost parentheses outward. 
+
+Write a **single line of code** that computes the natural logarithm (`log()`) of the absolute value (`abs()`) of `-e^3`. In R, $e^3$ is written as `exp(3)`.
+
+```{r nested_eval, exercise=TRUE}
+
+```
+
+``` {r nested_eval-hint-1}
+Start from the inside: first compute exp(3), wrap that inside abs(-exp(3)), and wrap that inside log().
+```
+
+```{r nested_eval-solution}
+log(abs(-exp(3)))
+```
+
+```{r nested_eval-check}
+grade_result(
+  pass_if(~ isTRUE(all.equal(as.numeric(.result), 3)), "Spot on! The operations undo each other, leaving 3."),
+  fail_if(~ TRUE, "Check the nesting: log(abs(-exp(3))).")
+)
+```
+
+---
+
+### Question 1.5: Mathematical Inverses in R
+
+```{r quiz_inverses}
+quiz(
+  question(
+    "Assuming `x` is any positive numeric scalar, which of the following expressions will always return the original value of `x`?",
+    answer("`sqrt(x^3)`"),
+    answer("`10^(log10(x))`", correct = TRUE),
+    answer("`log(x^10)`"),
+    answer("`exp(log10(x))`"),
+    allow_retry = TRUE
+  )
+)
+```
+
+---
+
+## Section 2: Inspecting Data Frames
+
+R includes built-in datasets. One standard dataset is `airquality`, containing daily air quality measurements in New York from May to September 1973.
+
+### Exercise 2.1: Inspecting Structure
+
+Run `str()` on the built-in `airquality` dataset to inspect its structure.
+
+```{r str_airquality, exercise=TRUE}
+
+```
+
+```{r str_airquality-solution}
+str(airquality)
+```
+
+```{r str_airquality-check}
+grade_this_code()
+```
+
+---
+
+### Question 2.2: Interpreting Structure
+
+```{r quiz_str}
+quiz(
+  question(
+    "Based on the output of `str(airquality)`, which statement is accurate?",
+    answer("`airquality` has 153 observations across 6 numeric/integer variables.", correct = TRUE),
+    answer("`airquality` contains character data for city names."),
+    answer("`airquality` is a matrix with 6 observations and 153 columns."),
+    answer("All variables in `airquality` are factors."),
+    allow_retry = TRUE
+  )
+)
+```
+
+---
+
+### Exercise 2.3: Extracting Columns via `$`
+
+Use the `$` operator to extract the `Wind` column from `airquality` and assign it to the object `wind_speed`. On the last line, check its class using `class()`.
+
+```{r extract_dollar, exercise=TRUE}
+
+```
+
+```{r extract_dollar-hint-1}
+wind_speed <- airquality$Wind
+class(wind_speed)
+```
+
+```{r extract_dollar-solution}
+wind_speed <- airquality$Wind
+class(wind_speed)
+```
+
+```{r extract_dollar-check}
+grade_result(
+  pass_if(~ identical(.result, "numeric"), "Correct! Extracting with $ yields an atomic numeric vector."),
+  fail_if(~ TRUE, "Make sure you assigned airquality$Wind to wind_speed and ran class(wind_speed) on the last line.")
+)
+```
+
+---
+
+### Exercise 2.4: Subsetting with Single Brackets `[`
+
+Extract the `Wind` column using single brackets `[` by column name: `airquality["Wind"]`. Assign this to `wind_df`. 
+
+Then check whether `wind_speed` (from Exercise 2.3) and `wind_df` are `identical()`. Your last line should be the call to `identical()`.
+
+```{r extract_bracket, exercise=TRUE}
+wind_speed <- airquality$Wind
+
+# Extract "Wind" using ["Wind"] into wind_df, then test identical(wind_speed, wind_df)
+
+```
+
+```{r extract_bracket-solution}
+wind_speed <- airquality$Wind
+wind_df <- airquality["Wind"]
+identical(wind_speed, wind_df)
+```
+
+```{r extract_bracket-check}
+grade_result(
+  pass_if(~ identical(.result, FALSE), "Correct! They are NOT identical because single brackets on a data frame return another data frame, whereas $ extracts the bare vector."),
+  fail_if(~ TRUE, "Make sure identical(wind_speed, wind_df) is evaluated on the final line.")
+)
+```
+
+---
+
+### Exercise 2.5: Working with Factors
+
+Another built-in dataset is `chickwts`, which measures chick weights according to feed type. The `feed` column is stored as a `factor`.
+
+In one line of code, combine `levels()` and `length()` to find the total number of distinct feed types in `chickwts$feed`.
+
+```{r factor_levels, exercise=TRUE}
+
+```
+
+``` {r factor_levels-hint-1}
+Use levels(chickwts$feed) inside length().
+```
+
+```{r factor_levels-solution}
+length(levels(chickwts$feed))
+```
+
+```{r factor_levels-check}
+grade_result(
+  pass_if(~ identical(as.numeric(.result), 6), "Correct! There are 6 distinct feed types."),
+  fail_if(~ TRUE, "Use length(levels(chickwts$feed)).")
+)
+```
+
+---
+
+### Exercise 2.6: Contingency Tables
+
+Use the `table()` function in a single line of code to count how many observations exist for each feed type in `chickwts$feed`.
+
+```{r factor_table, exercise=TRUE}
+
+```
+
+```{r factor_table-solution}
+table(chickwts$feed)
+```
+
+```{r factor_table-check}
+grade_result(
+  pass_if(~ inherits(.result, "table") && length(.result) == 6, "Excellent! table() computes frequencies of each factor level."),
+  fail_if(~ TRUE, "Make sure you called table(chickwts$feed).")
+)
+```
+
+---
+
+## Section 3: Vectors, Slicing, and Sequences
+
+### Exercise 3.1: Constructing Vectors
+
+Create a numeric vector named `rainfall` containing the following average monthly precipitation figures (in mm): `45`, `38`, `52`, `89`, `110`, `64`. Display the vector on the last line.
+
+```{r make_vec, exercise=TRUE}
+
+```
+
+```{r make_vec-solution}
+rainfall <- c(45, 38, 52, 89, 110, 64)
+rainfall
+```
+
+```{r make_vec-check}
+grade_result(
+  pass_if(~ identical(.result, c(45, 38, 52, 89, 110, 64)), "Nice work!"),
+  fail_if(~ TRUE, "Use c(...) with the specified numbers and print rainfall on the last line.")
+)
+```
+
+---
+
+### Exercise 3.2: Character Vectors
+
+Create a character vector named `months` containing the labels: `"May"`, `"Jun"`, `"Jul"`, `"Aug"`, `"Sep"`, `"Oct"`. Display the vector on the last line.
+
+```{r make_char_vec, exercise=TRUE}
+
+```
+
+```{r make_char_vec-solution}
+months <- c("May", "Jun", "Jul", "Aug", "Sep", "Oct")
+months
+```
+
+```{r make_char_vec-check}
+grade_result(
+  pass_if(~ identical(.result, c("May", "Jun", "Jul", "Aug", "Sep", "Oct")), "Correct!"),
+  fail_if(~ TRUE, "Ensure all month names match the capitalization and spelling exactly.")
+)
+```
+
+---
+
+### Exercise 3.3: Naming Vector Elements
+
+Assign the `months` vector as the names of the `rainfall` vector using the `names()` function. Display `rainfall` on the last line.
+
+```{r name_vec, exercise=TRUE}
+rainfall <- c(45, 38, 52, 89, 110, 64)
+months <- c("May", "Jun", "Jul", "Aug", "Sep", "Oct")
+
+```
+
+```{r name_vec-solution}
+rainfall <- c(45, 38, 52, 89, 110, 64)
+months <- c("May", "Jun", "Jul", "Aug", "Sep", "Oct")
+names(rainfall) <- months
+rainfall
+```
+
+```{r name_vec-check}
+grade_result(
+  pass_if(~ !is.null(names(.result)) && identical(unname(.result), c(45, 38, 52, 89, 110, 64)) && identical(names(.result), c("May", "Jun", "Jul", "Aug", "Sep", "Oct")), "Great job! Vector elements are now named."),
+  fail_if(~ TRUE, "Assign names using names(rainfall) <- months and evaluate rainfall on the last line.")
+)
+```
+
+---
+
+### Exercise 3.4: Slicing with `:`
+
+Using the `:` operator, extract elements 2 through 4 from the named `rainfall` vector.
+
+```{r slice_colon, exercise=TRUE}
+rainfall <- c(May = 45, Jun = 38, Jul = 52, Aug = 89, Sep = 110, Oct = 64)
+
+```
+
+```{r slice_colon-solution}
+rainfall[2:4]
+```
+
+```{r slice_colon-check}
+grade_result(
+  pass_if(~ identical(unname(.result), c(38, 52, 89)), "Correct! rainfall[2:4] selects Jun, Jul, and Aug."),
+  fail_if(~ TRUE, "Use square brackets with the colon operator: rainfall[2:4].")
+)
+```
+
+---
+
+### Exercise 3.5: Non-Contiguous Subsetting
+
+Using the `c()` function inside single brackets, extract only the 1st, 3rd, and 6th elements (`May`, `Jul`, and `Oct`) from `rainfall`.
+
+```{r slice_indices, exercise=TRUE}
+rainfall <- c(May = 45, Jun = 38, Jul = 52, Aug = 89, Sep = 110, Oct = 64)
+
+```
+
+```{r slice_indices-solution}
+rainfall[c(1, 3, 6)]
+```
+
+```{r slice_indices-check}
+grade_result(
+  pass_if(~ identical(unname(.result), c(45, 52, 64)), "Correct! Non-contiguous extraction requires indexing with a vector: rainfall[c(1, 3, 6)]."),
+  fail_if(~ TRUE, "Make sure you used rainfall[c(1, 3, 6)].")
+)
+```
+
+---
+
+### Exercise 3.6: Generating Number Sequences
+
+Use the `:` operator to generate an integer sequence from `15` to `85` inclusive.
+
+```{r seq_colon, exercise=TRUE}
+
+```
+
+```{r seq_colon-solution}
+15:85
+```
+
+```{r seq_colon-check}
+grade_result(
+  pass_if(~ identical(.result, 15:85), "Correct!"),
+  fail_if(~ TRUE, "Use 15:85.")
+)
+```
+
+---
+
+### Exercise 3.7: Stepped Sequences
+
+Using `seq()`, create a vector containing all **even numbers between 2 and 80**, inclusive.
+
+```{r seq_even, exercise=TRUE}
+
+```
+
+```{r seq_even-solution}
+seq(2, 80, by = 2)
+```
+
+```{r seq_even-check}
+grade_result(
+  pass_if(~ identical(.result, seq(2, 80, by = 2)), "Correct!"),
+  fail_if(~ TRUE, "Use seq(2, 80, by = 2).")
+)
+```
+
+---
+
+### Exercise 3.8: Fractional Sequences and Length
+
+Create a sequence that begins at `4`, increments by steps of `3/8` (`0.375`), and does not exceed `42`. Store this sequence in `octaves`. 
+
+On the final line, find how many numbers are in the sequence using `length()`.
+
+```{r seq_fraction, exercise=TRUE}
+
+```
+
+``` {r seq_fraction-hint-1}
+Use seq(4, 42, by = 3/8) to create the vector, then pass it to length().
+```
+
+```{r seq_fraction-solution}
+octaves <- seq(4, 42, by = 3/8)
+length(octaves)
+```
+
+```{r seq_fraction-check}
+grade_result(
+  pass_if(~ identical(.result, 102L) || identical(.result, 102), "Well done! The vector has 102 elements."),
+  fail_if(~ TRUE, "Make sure octaves <- seq(4, 42, by = 3/8) is assigned and length(octaves) is the last line.")
+)
+```
+
+---
+
+### Question 3.9: Data Types in Sequences
+
+```{r quiz_seq_types}
+quiz(
+  question(
+    "What will be the class of `val` after running `val <- seq(2, 20, 0.5)`?",
+    answer("`integer`"),
+    answer("`numeric`", correct = TRUE),
+    answer("`double_int`"),
+    answer("`character`"),
+    allow_retry = TRUE
+  ),
+  question(
+    "What is the class of `val` after running `val <- 5:15`?",
+    answer("`numeric`"),
+    answer("`integer`", correct = TRUE),
+    answer("`factor`"),
+    answer("`list`"),
+    allow_retry = TRUE
+  ),
+  question(
+    "In R, literal numbers default to numeric (double). What suffix forces a literal number to be stored strictly as an integer?",
+    answer("`I` (e.g., `5I`)"),
+    answer("`L` (e.g., `5L`)", correct = TRUE),
+    answer("`int` (e.g., `5int`)"),
+    answer("`%` (e.g., `5%`)"),
+    allow_retry = TRUE
+  )
+)
+```
+
+---
+
+### Exercise 3.10: Coercion
+
+Given the following character vector of numbers:
+```r
+vals <- c("10", "20", "30", "40")
+```
+Convert `vals` to integers using `as.integer()` and reassign it to `vals`. The last line should evaluate `vals`.
+
+```{r coerce_int, exercise=TRUE}
+vals <- c("10", "20", "30", "40")
+
+```
+
+```{r coerce_int-solution}
+vals <- c("10", "20", "30", "40")
+vals <- as.integer(vals)
+vals
+```
+
+```{r coerce_int-check}
+grade_result(
+  pass_if(~ identical(.result, c(10L, 20L, 30L, 40L)), "Spot on! as.integer() successfully coerced the character vector into integers."),
+  fail_if(~ TRUE, "Reassign vals with as.integer(vals) and output vals on the last line.")
+)
+```
+
+---
+
+## Submit Your Work
+
+When you have completed all exercises and questions, click the button below to generate your submission key. Copy the key and paste it into your LMS assignment submission page.
+
+```{r context="server"}
+learnrhash::encoder_logic()
+```
+<style>
+#learnrhash-url, a[href="http://google.com"] {
+  display: none !important;
+}
+</style>
+```{r encode, echo=FALSE}
+learnrhash::encoder_ui()
+```
